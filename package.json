@@ -1,0 +1,40 @@
+{
+  "name": "aor-parseserver-client",
+  "version": "0.1.0",
+  "description": "Parse server client for admin-on-rest",
+  "main": "lib/index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/leperone/aor-parseserver-client.git"
+  },
+  "files": [
+    "LICENSE",
+    "*.md",
+    "lib",
+    "src"
+  ],
+  "keywords": [
+    "admin-on-rest",
+    "react",
+    "parse server",
+    "rest"
+  ],
+  "author": "Vincenzo Lepera",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/leperone/aor-parseserver-client/issues"
+  },
+  "homepage": "https://github.com/leperone/aor-parseserver-client#readme",
+  "dependencies": {
+    "admin-on-rest": "^0.9.1"
+  },
+  "devDependencies": {
+    "babel-cli": "^6.24.0",
+    "babel-plugin-add-module-exports": "^0.2.1",
+    "babel-preset-es2015": "^6.18.0",
+    "babel-preset-stage-0": "^6.16.0"
+  }
+}
