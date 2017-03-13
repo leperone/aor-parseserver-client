@@ -38,7 +38,7 @@ export default (parseConfig, httpClient = fetchJson) => {
 	    options.headers.set('X-Parse-Application-Id', parseConfig['APP-ID']);
 	    options.headers.set('X-Parse-REST-API-Key', parseConfig['REST-API-KEY']);
 	    
-	    if (token !== ''){
+	    if (token !== null){
 		    options.headers.set('X-Parse-Session-Token', token);
 	    }
 	    
