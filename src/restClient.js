@@ -15,7 +15,9 @@ export const FUNCTION = 'FUNCTION';
 function filterQuery(obj) {
 	let result = {};
 	Object.keys(obj).forEach(function(x){
-		result[x] = {"$regex":obj[x]};
+		if (typeof obj[x] === 'string' )
+			result[x] = {"$regex":obj[x]};
+		else result[x] = obj[x];
 	});
 	return JSON.stringify(result);
 }
@@ -44,11 +46,13 @@ export default (parseConfig, httpClient = fetchJson) => {
 	    
 	    switch (type) {
 	    case GET_LIST: {
-	        const { page, perPage } = params.pagination;
-	        const { field, order } = params.sort;
+	        const page = (params.pagination && params.pagination.page !== undefined) ? params.pagination.page : 1;
+			const perPage = (params.pagination && params.pagination.perPage !== undefined) ? params.pagination.perPage : 10;
+			const field = (params.sort && params.sort.field !== undefined) ? params.sort.field : "createdAt";
+			const order = (params.sort && params.sort.order !== undefined) ? params.sort.order : "ASC";
 	        const query = {
 		        count: 1,
-		        order: (order === "ASC" ? field : "-"+field),
+		        order: (order === "DESC" ? "-"+field : field),
 		        limit: perPage,
 		        skip: (page - 1) * perPage,
 		        where: filterQuery(params.filter),
@@ -67,10 +71,12 @@ export default (parseConfig, httpClient = fetchJson) => {
 	        break;
 	    }
 	    case GET_MANY_REFERENCE: {
-	        const { page, perPage } = params.pagination;
-	        const { field, order } = params.sort;
+	        const page = (params.pagination && params.pagination.page !== undefined) ? params.pagination.page : 1;
+			const perPage = (params.pagination && params.pagination.perPage !== undefined) ? params.pagination.perPage : 10;
+			const field = (params.sort && params.sort.field !== undefined) ? params.sort.field : "createdAt";
+			const order = (params.sort && params.sort.order !== undefined) ? params.sort.order : "ASC";
 	        const query = {
-	            order: (order === "ASC" ? field : "-"+field),
+	            order: (order === "DESC" ? "-"+field : field),
 		        limit: perPage,
 		        skip: (page - 1) * perPage,
 		        where: JSON.stringify({[params.target] : params.id}),
