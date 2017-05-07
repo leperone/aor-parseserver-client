@@ -1,4 +1,4 @@
-import { AUTH_LOGIN, AUTH_LOGOUT, AUTH_CHECK } from 'admin-on-rest';
+import { AUTH_LOGIN, AUTH_LOGOUT, AUTH_CHECK, AUTH_ERROR } from 'admin-on-rest';
 
 export default (parseConfig) => {
 	
@@ -27,19 +27,34 @@ export default (parseConfig) => {
 	            });
 	    }
 	    if (type === AUTH_LOGOUT) {
-	        headers.set('X-Parse-Session-Token', localStorage.getItem('parseToken'));
-	        const request = new Request(parseConfig.URL+'/logout', {
-	            method: 'POST',
-	            headers: headers,
-	        });
-	        return fetch(request)
-	        	.then(response => {
-	                if (response.status < 200 || response.status >= 300) {
-	                    throw new Error(response.statusText);
-	                }
-	                localStorage.removeItem('parseToken');
-	                return Promise.resolve();
-	            });
+		    if (localStorage.getItem('parseToken')){
+		        headers.set('X-Parse-Session-Token', localStorage.getItem('parseToken'));
+		        const request = new Request(parseConfig.URL+'/logout', {
+		            method: 'POST',
+		            headers: headers,
+		        });
+		        return fetch(request)
+		        	.then(response => {
+		                localStorage.removeItem('parseToken');
+		                if (response.status < 200 || response.status >= 300) {
+		                    response.json().then(function(object) {
+						    	if (object.code !== 209){
+								    throw new Error(object.error);
+						    	}
+						    })
+		                }
+		            })
+	        }
+	        localStorage.removeItem('parseToken');
+	        return Promise.resolve();
+	    }
+	    if (type === AUTH_ERROR) {
+	        const { status } = params;
+	        if (status === 209) {
+	            localStorage.removeItem('parseToken');
+	            return Promise.reject();
+	        }
+	        return Promise.resolve();
 	    }
 	    if (type === AUTH_CHECK) {
 	        return localStorage.getItem('parseToken') ? Promise.resolve() : Promise.reject();

@@ -1,6 +1,6 @@
 {
   "name": "aor-parseserver-client",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "Parse server client for admin-on-rest",
   "main": "lib/index.js",
   "scripts": {
@@ -29,7 +29,7 @@
   },
   "homepage": "https://github.com/leperone/aor-parseserver-client#readme",
   "dependencies": {
-    "admin-on-rest": "^0.9.1"
+    "admin-on-rest": "^1.0.0"
   },
   "devDependencies": {
     "babel-cli": "^6.24.0",

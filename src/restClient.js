@@ -1,4 +1,4 @@
-import { queryParameters, fetchJson } from 'admin-on-rest/lib/util/fetch';
+import { queryParameters, fetchJson } from './fetch';
 import {
     GET_LIST,
     GET_ONE,
@@ -19,7 +19,9 @@ function filterQuery(obj) {
 			result[x] = {"$regex":obj[x]};
 		else result[x] = obj[x];
 	});
-	return JSON.stringify(result);
+	if (Object.keys(result).length >0)
+		return JSON.stringify(result);
+	return null;
 }
 
 export default (parseConfig, httpClient = fetchJson) => {
@@ -46,17 +48,24 @@ export default (parseConfig, httpClient = fetchJson) => {
 	    
 	    switch (type) {
 	    case GET_LIST: {
-	        const page = (params.pagination && params.pagination.page !== undefined) ? params.pagination.page : 1;
-			const perPage = (params.pagination && params.pagination.perPage !== undefined) ? params.pagination.perPage : 10;
-			const field = (params.sort && params.sort.field !== undefined) ? params.sort.field : "createdAt";
-			const order = (params.sort && params.sort.order !== undefined) ? params.sort.order : "ASC";
+	        const page = (params.pagination && params.pagination.page != null) ? params.pagination.page : 1;
+			const perPage = (params.pagination && params.pagination.perPage != null) ? params.pagination.perPage : 10;
+			const field = (params.sort && params.sort.field != null) ? params.sort.field : "createdAt";
+			const order = (params.sort && params.sort.order != null) ? params.sort.order : "ASC";
+			const filter = (params.filter != null) ? filterQuery(params.filter) : null;
+			const include = (params.include != null) ? params.include.replace(/\s/g, "") : null;
 	        const query = {
 		        count: 1,
 		        order: (order === "DESC" ? "-"+field : field),
 		        limit: perPage,
 		        skip: (page - 1) * perPage,
-		        where: filterQuery(params.filter),
 	        };
+	        if (include != null){
+		        query.include = include;
+	        }
+	        if (filter != null){
+		        query.where = filter;
+	        }
 	        url = `${parseConfig.URL}/classes/${resource}?${queryParameters(query)}`;
 	        break;
 	    }
@@ -71,10 +80,10 @@ export default (parseConfig, httpClient = fetchJson) => {
 	        break;
 	    }
 	    case GET_MANY_REFERENCE: {
-	        const page = (params.pagination && params.pagination.page !== undefined) ? params.pagination.page : 1;
-			const perPage = (params.pagination && params.pagination.perPage !== undefined) ? params.pagination.perPage : 10;
-			const field = (params.sort && params.sort.field !== undefined) ? params.sort.field : "createdAt";
-			const order = (params.sort && params.sort.order !== undefined) ? params.sort.order : "ASC";
+	        const page = (params.pagination && params.pagination.page != null) ? params.pagination.page : 1;
+			const perPage = (params.pagination && params.pagination.perPage != null) ? params.pagination.perPage : 10;
+			const field = (params.sort && params.sort.field != null) ? params.sort.field : "createdAt";
+			const order = (params.sort && params.sort.order != null) ? params.sort.order : "ASC";
 	        const query = {
 	            order: (order === "DESC" ? "-"+field : field),
 		        limit: perPage,
@@ -155,5 +164,4 @@ export default (parseConfig, httpClient = fetchJson) => {
 	    return fetchJson(url, options)
 	        .then(response => convertHTTPResponseToREST(response, type, resource, params));
 	};
-
 }
